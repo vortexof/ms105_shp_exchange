@@ -1,24 +1,24 @@
 # SHP.EXchange
-Кратко: эмулятор биржи
+Briefly: exchange emulator
 
-Развёрнуто: 
-- Акции
-- Покупка / Продажа
-- Торговля в лонг
-- Торговля в шорт
-- Торговля с плечом
+Expanded: 
+- Stocks
+- Purchase / Sale
+- Long trading
+- Short trading
+- Leverage trading
 - Margin call
-- История - загружается в виде массива котировок. Позже - эмулируется ботами.
+- The history is loaded as an array of quotes. Later it is emulated by bots.
 
-## Технологический стек
-- Python 3.8 (не меньше)
+## Technology stack
+- Python 3.8 (at least)
 - Django 3
 - Django REST Framework
 
 
-## Подготовка рабочего места разработчика.
+## Preparing the developer's workplace.
 
-### Установка необходимых библиотек
+### Installing the required libraries
 ```bash
 sudo apt install make gcc g++
 curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
@@ -26,10 +26,9 @@ sudo apt-get install -y nodejs
 ````
 
 ### Backend
-1. В главной папке проекта необходимо создать папку `data` и поместить туда .csv файлы из [необходимых файлов](https://gitlab.informatics.ru/2020-2021/mytischi/s105/exchange_engine/-/wikis/%D0%9D%D0%B5%D0%BE%D0%B1%D1%85%D0%BE%D0%B4%D0%B8%D0%BC%D1%8B%D0%B5-%D1%84%D0%B0%D0%B9%D0%BB%D1%8B) в Wiki проекта. 
+1. In the main project folder, you need to create a `data` folder and put the .csv files from [required files](https://gitlab.informatics.ru/2020-2021/mytischi/s105/exchange_engine/-/wikis/%D0%9D%D0%B5%D0%BE%D0%B1%D1%85%D0%BE%D0%B4%D0%B8%D0%BC%D1%8B%D0%B5-%D1%84%D0%B0%D0%B9%D0%BB%D1%8B) в Wiki проекта. 
    Они нужны будут для запуска ботов
-2. Создать venv, установить библиотеки
-
+2. Create venv, install libraries
    ```bash
    python3.8 -m venv venv
    source venv/bin/activate
@@ -37,68 +36,67 @@ sudo apt-get install -y nodejs
    pip install -r requirements.txt
    ```
 
-3. Подготовить БД
-   * Установить postgresql
+3. Prepare DB
+   * Install postgresql
      ```bash
      sudo apt install postgresql
      sudo systemctl start postgresql.service
      sudo systemctl enable postgresql.service
      ```
-   * Создать юзера и базу
+   * Create user and database
      ```bash
      sudo -u postgres psql
      ```
-     Далее в консоли postgresql
+     Next in the console postgresql
      ```sql
      create database exchange;
      create user shp with encrypted password 'promprog';
      grant all privileges on database exchange to shp;
      \q
      ```
-   * Скачать из [необходимых файлов](https://gitlab.informatics.ru/2020-2021/mytischi/s105/exchange_engine/-/wikis/%D0%9D%D0%B5%D0%BE%D0%B1%D1%85%D0%BE%D0%B4%D0%B8%D0%BC%D1%8B%D0%B5-%D1%84%D0%B0%D0%B9%D0%BB%D1%8B) 
-     файл `exchange.sql`, поместить его в корень проекта и загрузить его в БД командой
+   * Download from [required files](https://gitlab.informatics.ru/2020-2021/mytischi/s105/exchange_engine/-/wikis/%D0%9D%D0%B5%D0%BE%D0%B1%D1%85%D0%BE%D0%B4%D0%B8%D0%BC%D1%8B%D0%B5-%D1%84%D0%B0%D0%B9%D0%BB%D1%8B) 
+     file `exchange.sql`, place it in the root of the project and load it into the database with the command
      ```bash
      sudo -u postgres psql exchange < exchange.sql
      ```
-   * Актуализировать схему
+   * Update schema
      ```bash
      ./manage.py migrate
      ```
-   * создать юзера (выполняется только для разработки, в продакшене не делать)
+   * create a user (performed only for development, not in production)
      ```bash
      ./manage.py shell -c "from django.contrib.auth import get_user_model; get_user_model().objects.create_superuser('vasya', '1@abc.net', 'promprog')"
      ```
 
 ### Frontend
-Здесь всё просто
 ```bash
 cd exchange_engine_frontend
 npm install
 ```
 
-### Запуск проекта
+### Launch of the project
 ```bash
-python price_bot.py    # открыть в отдельной вкладке, команда будет работать на протяжении всего времени
-python candles_bot.py    # открыть в отдельной вкладке, команда будет работать на протяжении всего времени
-./manage.py runserver  # открыть в отдельной вкладке, команда будет работать на протяжении всего времени
+python price_bot.py    # open in a separate tab, the command will work throughout the entire time
+python candles_bot.py    # open in a separate tab, the command will work throughout the entire time
+./manage.py runserver  # open in a separate tab, the command will work throughout the entire time
 cd exchange_engine_frontend
-npm run serve  # открыть в отдельной вкладке, команда будет работать на протяжении всего времени
+npm run serve  # open in a separate tab, the command will work throughout the entire time
 ```
 
-## Тесты
-Для тестирования чистоты кода введите в терминал команду:
+## Tests
+To test the purity of the code, enter the command in the terminal:
 ```bash
 DJANGO_SETTINGS_MODULE=exchange_engine.settings pylint --load-plugins pylint_django --load-plugins pylint_django.checkers.migrations *
 ```
 
-Для тестирования самого кода введите в терминал:
+To test the code itself, enter into the terminal:
 ```bash
 ./manage.py test
 ```
 
 
-## Дополнительно
+## Additionally
 
-Все необходимые файлы вы можете найти здесь: https://gitlab.informatics.ru/2020-2021/mytischi/s105/exchange_engine/-/wikis/%D0%9D%D0%B5%D0%BE%D0%B1%D1%85%D0%BE%D0%B4%D0%B8%D0%BC%D1%8B%D0%B5+%D1%84%D0%B0%D0%B9%D0%BB%D1%8B
+You can find all the necessary files here: https://gitlab.informatics.ru/2020-2021/mytischi/s105/exchange_engine/-/wikis/%D0%9D%D0%B5%D0%BE%D0%B1%D1%85%D0%BE%D0%B4%D0%B8%D0%BC%D1%8B%D0%B5+%D1%84%D0%B0%D0%B9%D0%BB%D1%8B
 
-Более подробная информация и проекте и его запуске доступна по ссылке: https://gitlab.informatics.ru/2020-2021/mytischi/s105/exchange_engine/-/wikis/home
+More information about the project and its launch is available at the link: https://gitlab.informatics.ru/2020-2021/mytischi/s105/exchange_engine/-/wikis/home
